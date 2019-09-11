@@ -36,6 +36,7 @@ int main() {
 //        printf("Successfully get the message from server:%s",recvData);
 //    }
 
+    srand(time(NULL));
     timeval timeout;
     timeout.tv_sec = 0;
     timeout.tv_usec = 500000;
