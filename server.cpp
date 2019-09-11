@@ -3,6 +3,7 @@
 #include <winsock2.h>
 #include <inaddr.h>
 #pragma comment(lib, "ws2_32.lib")
+#include <ctime>
 
 int main() {
     WSADATA wsaData;
@@ -30,6 +31,7 @@ int main() {
     char *sendBuf = "Hello, client. Gotten your message";
     sendto(serverSock, sendBuf, strlen(sendBuf) + 1, 0, (SOCKADDR *) &remoteAddr, len);
 
+    srand(time(NULL));
     int sendNum = 0;
     while(sendNum<=20) {
         int recvNum = recvfrom(serverSock, recvData, 80, 0, (SOCKADDR *) &remoteAddr, &len);
