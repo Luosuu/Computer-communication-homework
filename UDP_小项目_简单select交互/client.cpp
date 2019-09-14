@@ -2,7 +2,7 @@
 #include <winsock2.h>
 #include <cstdio>
 #include <inaddr.h>
-#include <time.h>
+#include <ctime>
 #include <cstdlib>
 
 #pragma comment(lib,"ws2_32.lib")
@@ -19,14 +19,21 @@ int main() {
     SOCKET clientSock = socket(AF_INET,SOCK_DGRAM, IPPROTO_UDP);
 
     SOCKADDR_IN clientAddr;
-    clientAddr.sin_port=htons(12345);
+    clientAddr.sin_port=htons(8000);
     clientAddr.sin_family = AF_INET;
     clientAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
+    bind(clientSock,(SOCKADDR*)&clientAddr, sizeof(SOCKADDR));
+
+    SOCKADDR_IN destAddr;
+    destAddr.sin_port=htons(12345);
+    destAddr.sin_family = AF_INET;
+    destAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
     //bind(clientSock, (SOCKADDR*)&clientAddr, sizeof(SOCKADDR));
 
-    int len=sizeof(clientAddr);
+    int len=sizeof(destAddr);
     char *sendBuf = "Hello, server";
-    sendto(clientSock,sendBuf,strlen(sendBuf),0,(SOCKADDR*)&clientAddr,len);
+    sendto(clientSock,sendBuf,strlen(sendBuf),0,(SOCKADDR*)&destAddr,len);
 
 //    char recvData[80];
 //    int recvNum = recvfrom(clientSock,recvData,80,0,(SOCKADDR*)&clientAddr,&len);
@@ -55,7 +62,7 @@ int main() {
         else if(FD_ISSET(clientSock,&rfd)) {
 
             char check_str[5] = {0};
-            int recvNum = recvfrom(clientSock,check_str,5,0,(SOCKADDR*)&clientAddr,&len);
+            int recvNum = recvfrom(clientSock,check_str,5,0,(SOCKADDR*)&destAddr,&len);
             int check_num = atoi(check_str);
             if(check_num>100)
             {
@@ -68,7 +75,7 @@ int main() {
             char sendData[5] = {0};
             itoa(randomNum, sendData, 10);
 
-            sendto(clientSock, sendData, strlen(sendData), 0, (SOCKADDR *) &clientAddr, len);
+            sendto(clientSock, sendData, strlen(sendData), 0, (SOCKADDR *) &destAddr, len);
             sendNum++;
         }
         else if(nRet==0)//timeout
@@ -77,7 +84,7 @@ int main() {
             char sendData[5] = {0};
             itoa(randomNum, sendData, 10);
             printf("%d\n", randomNum);
-            sendto(clientSock, sendData, strlen(sendData), 0, (SOCKADDR *) &clientAddr, len);
+            sendto(clientSock, sendData, strlen(sendData), 0, (SOCKADDR *) &destAddr, len);
             sendNum++;
         }
     }

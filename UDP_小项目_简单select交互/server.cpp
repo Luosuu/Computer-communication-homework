@@ -3,6 +3,7 @@
 #include <winsock2.h>
 #include <inaddr.h>
 #pragma comment(lib, "ws2_32.lib")
+
 #include <ctime>
 
 int main() {
@@ -25,16 +26,20 @@ int main() {
 
     char recvData[80];
 
-    SOCKADDR_IN remoteAddr;
-    int len = sizeof(remoteAddr);
+    SOCKADDR_IN clientAddr;
+    clientAddr.sin_port=htons(8000);
+    clientAddr.sin_family = AF_INET;
+    clientAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
+    int len = sizeof(clientAddr);
 
     char *sendBuf = "Hello, client. Gotten your message";
-    sendto(serverSock, sendBuf, strlen(sendBuf) + 1, 0, (SOCKADDR *) &remoteAddr, len);
+    sendto(serverSock, sendBuf, strlen(sendBuf) + 1, 0, (SOCKADDR *) &clientAddr, len);
 
     srand(time(NULL));
     int sendNum = 0;
     while(sendNum<=20) {
-        int recvNum = recvfrom(serverSock, recvData, 80, 0, (SOCKADDR *) &remoteAddr, &len);
+        int recvNum = recvfrom(serverSock, recvData, 80, 0, (SOCKADDR *) &clientAddr, &len);
         if (recvNum > 0) {
             recvData[recvNum] = 0x00;
             printf("Successfully get the message: %s\n", recvData);
@@ -48,7 +53,7 @@ int main() {
         {
             char  sendData[5] ={0};
             itoa(randomSum, sendData, 10);
-            sendto(serverSock, sendData, strlen(sendData) + 1, 0, (SOCKADDR *) &remoteAddr, len);
+            sendto(serverSock, sendData, strlen(sendData) + 1, 0, (SOCKADDR *) &clientAddr, len);
         }
 
         sendNum++;
