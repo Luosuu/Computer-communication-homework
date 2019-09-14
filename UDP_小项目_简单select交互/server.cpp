@@ -33,8 +33,8 @@ int main() {
 
     int len = sizeof(clientAddr);
 
-    char *sendBuf = "Hello, client. Gotten your message";
-    sendto(serverSock, sendBuf, strlen(sendBuf) + 1, 0, (SOCKADDR *) &clientAddr, len);
+    // char *sendBuf = "Hello, client. Gotten your message";
+    // sendto(serverSock, sendBuf, strlen(sendBuf) + 1, 0, (SOCKADDR *) &clientAddr, len);
 
     srand(time(NULL));
     int sendNum = 0;
