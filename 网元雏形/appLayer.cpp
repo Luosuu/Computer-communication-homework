@@ -20,6 +20,11 @@ int main() {
 
     bind(appLayerSock,(SOCKADDR*)&appLayerAddr,sizeof(appLayerAddr));//设置监听
 
+    SOCKADDR_IN destAddr;
+    destAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+    destAddr.sin_family = AF_INET;
+    destAddr.sin_port = htons(8000);
+
     timeval timeout;
     timeout.tv_sec = 0;
     timeout.tv_usec = 5000;
@@ -36,13 +41,20 @@ int main() {
             printf("error\n");
             break;
         }
-        //设置一个输入模块,送到网络层
-        //*
+        //set a input
+        if(getchar() == ' ')
+        {
+            char sendtoNet[100] = {0};
+            std::cout << "Please tell me what to send:" << std::endl;
+            scanf("%s",sendtoNet);
+            sendto(appLayerSock, sendtoNet, strlen(sendtoNet),0,(SOCKADDR*)&destAddr, sizeof(destAddr));
+            std::cout << "sent" << std::endl;
+        }
         //*
         else if(FD_ISSET(appLayerSock,&rfd)){
             //get message from network layer
             char netMessage[100] = {0};
-            int retval = recvfrom(appLayerSock, netMessage,5,0,(SOCKADDR*)&appLayerAddr,&len);
+            int retval = recvfrom(appLayerSock, netMessage,100,0,(SOCKADDR*)&destAddr,&len);
             if(retval>0){
                 std::cout << "Successfully get message from network layer" << std::endl;
             }
